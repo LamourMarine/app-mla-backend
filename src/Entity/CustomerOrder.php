@@ -2,11 +2,12 @@
 
 namespace App\Entity;
 
-use App\Repository\CustomerOrderRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\CustomerOrderRepository;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: CustomerOrderRepository::class)]
 class CustomerOrder
@@ -14,15 +15,19 @@ class CustomerOrder
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['CustomerOrder:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['CustomerOrder:read'])]
     private ?string $number = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+    #[Groups(['CustomerOrder:read'])]
     private ?string $total = null;
 
     #[ORM\Column]
+    #[Groups(['CustomerOrder:detail'])]
     private ?\DateTimeImmutable $order_at = null;
 
     /**

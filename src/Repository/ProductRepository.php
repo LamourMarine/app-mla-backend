@@ -31,13 +31,12 @@ class ProductRepository extends ServiceEntityRepository
     //        ;
     //    }
 
-    //    public function findOneBySomeField($value): ?Product
-    //    {
-    //        return $this->createQueryBuilder('p')
-    //            ->andWhere('p.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    public function findBioProducts(): array
+    {
+        return $this->createQueryBuilder('p')
+            ->where('p.isBio = :isBio')
+            ->setParameter('isBio', true)
+            ->getQuery()
+            ->getResult();
+    }
 }

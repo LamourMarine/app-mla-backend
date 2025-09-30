@@ -2,11 +2,13 @@
 
 namespace App\Entity;
 
-use App\Repository\ProductRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\ProductRepository;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
 class Product
@@ -14,24 +16,38 @@ class Product
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['product:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['product:read', 'product:write', 'product:list'])]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 2, max: 255)]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['product:read', 'product:write'])]
+    #[Assert\Length(max: 1000)]
     private ?string $description_Product = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['product:read', 'product:write'])]
     private ?string $image_Product = null;
 
     #[ORM\Column]
+    #[Groups(['product:read', 'product:write', 'product:list'])]
     private ?bool $isBio = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+    #[Groups(['product:read', 'product:write'])]
+    #[Assert\NotBlank]
+    #[Assert\Positive]
     private ?string $price = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['product:read', 'product:write'])]
+    #[Assert\NotBlank]
+    #[Assert\PositiveOrZero]
     private ?bool $availability = null;
 
     #[ORM\ManyToOne(inversedBy: 'products')]
