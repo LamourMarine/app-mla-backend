@@ -50,14 +50,14 @@ class Product
     #[Assert\PositiveOrZero]
     private ?bool $availability = null;
 
-    #[ORM\ManyToOne(inversedBy: 'products')]
+    #[ORM\ManyToOne(inversedBy: 'products', cascade: ["persist"])]
     private ?User $owner = null;
 
-    #[ORM\ManyToOne(inversedBy: 'products')]
+    #[ORM\ManyToOne(inversedBy: 'products', cascade: ["persist"])]
     #[ORM\JoinColumn(nullable: false)]
     private ?Category $category = null;
 
-    #[ORM\ManyToOne(inversedBy: 'products')]
+    #[ORM\ManyToOne(inversedBy: 'products', cascade: ["persist"])]
     #[ORM\JoinColumn(nullable: false)]
     private ?Unit $unit = null;
 
