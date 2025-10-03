@@ -33,16 +33,8 @@ class CategoryController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'show_category', methods: ['GET'])]
-    public function showCategory(Category $category): JsonResponse 
-    {
-        return $this->json($category, Response::HTTP_OK, [], [
-            'groups' => ['category:read']
-        ]);
-    }
-
-    #[Route('/new', name: 'new_category', methods: ['POST'])]
-    public function newCategory(Request $request): JsonResponse 
+    #[Route('', name: 'create_category', methods: ['POST'])]
+    public function createCategory(Request $request): JsonResponse 
     {
         $category = $this->serializer->deserialize(
             $request->getContent(),
@@ -64,6 +56,16 @@ class CategoryController extends AbstractController
             'groups' => ['category:read']
         ]);
     }
+
+
+    #[Route('/{id}', name: 'show_category', methods: ['GET'])]
+    public function showCategory(Category $category): JsonResponse 
+    {
+        return $this->json($category, Response::HTTP_OK, [], [
+            'groups' => ['category:read']
+        ]);
+    }
+
 
     #[Route('/{id}', name: 'update_categories', methods: ['PUT'])]
     public function updateCategory(Request $request, Category $category): JsonResponse

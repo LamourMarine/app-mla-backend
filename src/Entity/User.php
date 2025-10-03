@@ -60,7 +60,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var Collection<int, Product>
      */
-    #[ORM\OneToMany(targetEntity: Product::class, mappedBy: 'owner')]
+    #[ORM\OneToMany(targetEntity: Product::class, mappedBy: 'seller')]
     private Collection $products;
 
     /**
@@ -122,6 +122,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->roles = $roles;
 
         return $this;
+    }
+
+    public function isProducteur(): bool
+    {
+        return in_array('ROLE_PRODUCTEUR', $this->roles);
+    }
+
+    public function isStructure(): bool
+    {
+        return in_array('ROLE_STRUCTURE', $this->roles);
     }
 
     /**
@@ -193,7 +203,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if (!$this->products->contains($product)) {
             $this->products->add($product);
-            $product->setOwner($this);
+            $product->setSeller($this);
         }
 
         return $this;
@@ -203,8 +213,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if ($this->products->removeElement($product)) {
             // set the owning side to null (unless already changed)
-            if ($product->getOwner() === $this) {
-                $product->setOwner(null);
+            if ($product->getSeller() === $this) {
+                $product->setSeller(null);
             }
         }
 

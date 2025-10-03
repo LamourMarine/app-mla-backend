@@ -50,8 +50,10 @@ class Product
     #[Assert\PositiveOrZero]
     private ?bool $availability = null;
 
-    #[ORM\ManyToOne(inversedBy: 'products', cascade: ["persist"])]
-    private ?User $owner = null;
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'products')]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['product:read'])]
+    private ?User $seller = null;
 
     #[ORM\ManyToOne(inversedBy: 'products', cascade: ["persist"])]
     #[ORM\JoinColumn(nullable: false)]
@@ -149,15 +151,14 @@ class Product
         return $this;
     }
 
-    public function getOwner(): ?User
+    public function getSeller(): ?User
     {
-        return $this->owner;
+        return $this->seller;
     }
 
-    public function setOwner(?User $owner): static
+    public function setSeller(?User $seller): self
     {
-        $this->owner = $owner;
-
+        $this->seller = $seller;
         return $this;
     }
 

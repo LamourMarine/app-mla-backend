@@ -23,7 +23,7 @@ class ProductController extends AbstractController
         private ValidatorInterface $validator
     ) {}
 
-    #[Route('', name: 'product_list', methods: ['GET'])]
+        #[Route('', name: 'product_list', methods: ['GET'])]
     public function index(): JsonResponse
     {
         $products = $this->productRepository->findAll();
@@ -33,16 +33,10 @@ class ProductController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'show_product', methods: ['GET'])]
-    public function showProduct(Product $product): JsonResponse
-    {
-        return $this->json($product, Response::HTTP_OK, [], [
-            'groups' => ['product:read']
-        ]);
-    }
 
-    #[Route('/new', name: 'new_product', methods: ['POST'])]
-    public function newProduct(Request $request): JsonResponse {
+    #[Route('', name: 'create_product', methods: ['POST'])]
+    public function createProduct(Request $request): JsonResponse
+    {
         // Désérialise le JSON en objet Product
         $product = $this->serializer->deserialize(
             $request->getContent(),
@@ -67,6 +61,17 @@ class ProductController extends AbstractController
             'groups' => ['product:read']
         ]);
     }
+
+
+
+    #[Route('/{id}', name: 'show_product', methods: ['GET'])]
+    public function showProduct(Product $product): JsonResponse
+    {
+        return $this->json($product, Response::HTTP_OK, [], [
+            'groups' => ['product:read']
+        ]);
+    }
+
 
     #[Route('/{id}', name: 'update_product', methods: ['PUT'])]
     public function updateProduct(Request $request, Product $product): JsonResponse

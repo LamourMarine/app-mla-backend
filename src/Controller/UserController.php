@@ -13,7 +13,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
-#[Route ('/api/users' , name: 'api_users')]
+#[Route('/api/users', name: 'api_users')]
 class UserController extends AbstractController
 {
     public function __construct(
@@ -23,7 +23,7 @@ class UserController extends AbstractController
         private ValidatorInterface $validator
     ) {}
 
-    #[Route('', name: 'user_list', methods: ['GET'])]
+        #[Route('', name: 'user_list', methods: ['GET'])]
     public function index(): JsonResponse
     {
         $user = $this->userRepository->findAll();
@@ -33,16 +33,9 @@ class UserController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'show_user', methods: ['GET'])]
-    public function showUser(User $user): JsonResponse
-    {
-        return $this->json($user, Response::HTTP_OK, [], [
-            'groups' => ['user:read']
-        ]);
-    }
 
-    #[Route('/new', name: 'new_user', methods: ['POST'])]
-    public function newUser(Request $request): JsonResponse
+    #[Route('', name: 'create_user', methods: ['POST'])]
+    public function createUser(Request $request): JsonResponse
     {
         $user = $this->serializer->deserialize(
             $request->getContent(),
@@ -64,6 +57,16 @@ class UserController extends AbstractController
             'groups' => ['user:read']
         ]);
     }
+
+
+    #[Route('/{id}', name: 'show_user', methods: ['GET'])]
+    public function showUser(User $user): JsonResponse
+    {
+        return $this->json($user, Response::HTTP_OK, [], [
+            'groups' => ['user:read']
+        ]);
+    }
+
 
     #[Route('/{id}', name: 'update_user', methods: ['PUT'])]
     public function updateUser(Request $request, User $user): JsonResponse
@@ -107,9 +110,10 @@ class UserController extends AbstractController
             'groups' => ['user:read']
         ]);
     }
-    
+
     #[Route('/{id}', name: 'delete_user', methods: ['DELETE'])]
-    public function deleteUser( User $user): JsonResponse {
+    public function deleteUser(User $user): JsonResponse
+    {
         $this->entityManager->remove($user);
         $this->entityManager->flush();
 

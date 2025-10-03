@@ -33,16 +33,8 @@ class CustomerOrderController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'show_customer_order', methods: ['GET'])]
-    public function showCustomerOrder(CustomerOrder $customerOrder): JsonResponse
-    {
-        return $this->json($customerOrder, Response::HTTP_OK, [], [
-            'groups' => ['customerOrder:read']
-        ]);
-    }
-
-    #[Route('/new', name: 'new_customer_order', methods: ['POST'])]
-    public function newCustomerOrder(Request $request): JsonResponse
+    #[Route('', name: 'create_customer_order', methods: ['POST'])]
+    public function createCustomerOrder(Request $request): JsonResponse
     {
         $customerOrder = $this->serializer->deserialize(
             $request->getContent(),
@@ -64,5 +56,15 @@ class CustomerOrderController extends AbstractController
             'groups' => ['customerOrder:read']
         ]);
     }
+
+
+    #[Route('/{id}', name: 'show_customer_order', methods: ['GET'])]
+    public function showCustomerOrder(CustomerOrder $customerOrder): JsonResponse
+    {
+        return $this->json($customerOrder, Response::HTTP_OK, [], [
+            'groups' => ['customerOrder:read']
+        ]);
+    }
+
 
 }
