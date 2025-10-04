@@ -85,16 +85,16 @@ class UserController extends AbstractController
             $user->setPassword($data['password']);
         }
 
-        if (isset($data['adress'])) {
-            $user->setAdress($data['adress']);
+        if (isset($data['address'])) {
+            $user->setAdress($data['address']);
         }
 
         if (isset($data['phoneNumber'])) {
             $user->setPhoneNumber($data['phoneNumber']);
         }
 
-        if (isset($data['structure_names'])) {
-            $user->setStructureNames($data['structure_names']);
+        if (isset($data['names'])) {
+            $user->setName($data['names']);
         }
 
         $errors = $this->validator->validate($user);
