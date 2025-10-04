@@ -25,9 +25,18 @@ security:
 
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
+    role_hierarchy:
+            ROLE_ADMIN: [ROLE_USER]
+            ROLE_STRUCTURE: [ROLE_USER]
+            ROLE_PRODUCTEUR: [ROLE_USER]
+
     access_control:
-        # - { path: ^/admin, roles: ROLE_ADMIN }
-        # - { path: ^/profile, roles: ROLE_USER }
+        # Accès admin uniquement aux routes sensibles
+        #- { path: ^/api/categories, roles: ROLE_ADMIN, methods: [POST, PUT, DELETE] }
+        # Exemple : tout le monde peut lister les produits
+        #- { path: ^/api/products, roles: ROLE_USER, methods: [GET] }
+        # Exemple : seuls les producteurs peuvent créer un produit
+        #- { path: ^/api/products, roles: ROLE_PRODUCTEUR, methods: [POST] }
 
 when@test:
     security:

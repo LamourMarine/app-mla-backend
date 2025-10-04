@@ -16,67 +16,110 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 #[Route('/api/products', name: 'api_products')]
 class ProductController extends AbstractController
 {
-    #[Route('/', name: 'list', methods: ['GET'])]
-    public function index(ProductRepository $productRepository): JsonResponse
+    public function __construct(
+        private ProductRepository $productRepository,
+        private EntityManagerInterface $entityManager,
+        private SerializerInterface $serializer,
+        private ValidatorInterface $validator
+    ) {}
+
+        #[Route('', name: 'product_list', methods: ['GET'])]
+    public function index(): JsonResponse
     {
-        $products = $productRepository->findAll();
+        $products = $this->productRepository->findAll();
 
-        $data = [];
-        foreach ($products as $product) {
-            $data[] = [
-                'id' => $product->getId(),
-                'name' => $product->getName(),
-                'image' => $product->getImage(),
-                'price' => $product->getPrice(),
-                'availability' => $product->getAvailability(),
-                'description' => $product->getDescription(),
-                'category' => $product->getCategory(),
-                'isBio' => $product->getIsBio(),
-            ];
-        }
-
-        return new JsonResponse($data);
-    }
-
-    #[Route('/{id}', name: 'showProduct', methods: ['GET'])]
-    public function showProduct(Product $product): JsonResponse
-    {
-        return $this->json($product, Response::HTTP_OK, [], [
-            'groups' => ['product:read', 'product:detail']
+        return $this->json($products, 200, [], [
+            'groups' => ['product:read']
         ]);
     }
 
-    #[Route('/new', name: 'newProduct', methods: ['POST'])]
-    public function newProduct(Request $request, SerializerInterface $serializer, 
-    EntityManagerInterface $entityManager, ValidatorInterface $validatorInterface): JsonResponse
+
+    #[Route('', name: 'create_product', methods: ['POST'])]
+    public function createProduct(Request $request): JsonResponse
     {
-    
-        // Désérialise le JSON en objet User
-        $product = $this->$serializer->deserialize(
+        // Désérialise le JSON en objet Product
+        $product = $this->serializer->deserialize(
             $request->getContent(),
             Product::class,
             'json'
         );
 
-        $errors = $validatorInterface->validate($product);
+        // Validation
+        $errors = $this->validator->validate($product);
         if (count($errors) > 0) {
             return $this->json([
                 'errors' => (string) $errors
             ], Response::HTTP_BAD_REQUEST);
         }
 
-        $this->$entityManager->persist($product);
-        $this->$entityManager->flush();
+        // Persistance
+        $this->entityManager->persist($product);
+        $this->entityManager->flush();
 
-        return $this->json($product);
+        // Renvoi JSON
+        return $this->json($product, Response::HTTP_CREATED, [], [
+            'groups' => ['product:read']
+        ]);
     }
 
-    #[Route('/{id}' , name: 'deleteProduct' , methods: ['DELETE'])]
-    public function deleteProduct(Product $product, 
-    EntityManagerInterface $entityManager): JsonResponse
+
+
+    #[Route('/{id}', name: 'show_product', methods: ['GET'])]
+    public function showProduct(Product $product): JsonResponse
     {
-        $this->$entityManager->remove($product);
-        $this->$entityManager->flush();
+        return $this->json($product, Response::HTTP_OK, [], [
+            'groups' => ['product:read']
+        ]);
+    }
+
+
+    #[Route('/{id}', name: 'update_product', methods: ['PUT'])]
+    public function updateProduct(Request $request, Product $product): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+
+        if (isset($data['name'])) {
+            $product->setName($data['name']);
+        }
+        if (isset($data['image_Product'])) {
+            $product->setImageProduct($data['image_Product']);
+        }
+        if (isset($data['price'])) {
+            $product->setPrice($data['price']);
+        }
+        if (isset($data['availability'])) {
+            $product->setAvailability($data['availability']);
+        }
+        if (isset($data['description_Product'])) {
+            $product->setDescriptionProduct($data['description_Product']);
+        }
+        if (isset($data['category'])) {
+            $product->setCategory($data['category']);
+        }
+        if (isset($data['isBio'])) {
+            $product->setIsBio($data['isBio']);
+        }
+
+        $errors = $this->validator->validate($product);
+        if (count($errors) > 0) {
+            return $this->json([
+                'errors' => (string) $errors
+            ], Response::HTTP_BAD_REQUEST);
+        }
+
+        $this->entityManager->flush();
+
+        return $this->json($product, Response::HTTP_OK, [], [
+            'groups' => ['product:read']
+        ]);
+    }
+
+    #[Route('/{id}', name: 'delete_product', methods: ['DELETE'])]
+    public function deleteProduct(
+        Product $product,
+    ): JsonResponse {
+        $this->entityManager->remove($product);
+        $this->entityManager->flush();
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }

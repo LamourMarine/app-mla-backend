@@ -30,14 +30,16 @@ class CustomerOrder
     #[Groups(['CustomerOrder:detail'])]
     private ?\DateTimeImmutable $order_at = null;
 
+
     /**
      * @var Collection<int, OrderLine>
      */
-    #[ORM\OneToMany(targetEntity: OrderLine::class, mappedBy: 'orderRef')]
+    #[ORM\OneToMany(targetEntity: OrderLine::class, mappedBy: 'orderRef', cascade:['persist'])]
     private Collection $orderLines;
 
-    #[ORM\ManyToOne(inversedBy: 'customerOrders')]
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'customerOrders')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['order:read'])]
     private ?User $customer = null;
 
     public function __construct()
@@ -121,7 +123,7 @@ class CustomerOrder
         return $this->customer;
     }
 
-    public function setCustomer(?User $customer): static
+    public function setCustomer(?User $customer): self
     {
         $this->customer = $customer;
 
