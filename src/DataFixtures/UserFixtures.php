@@ -3,34 +3,25 @@
 namespace App\DataFixtures;
 
 use App\Entity\User;
-use App\Entity\Product;
-use App\Entity\Category;
-Use App\Entity\CustomerOrder;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Faker\Factory;
-use Doctrine\Common\DataFixtures\DependentFixtureInterface;
-use Doctrine\Common\DataFixtures\FixtureInterface;
-use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 
-class UserFixtures extends Fixture implements FixtureGroupInterface
+class UserFixtures extends Fixture
 {
 
     public const ADMIN_REFERENCE = 'admin-user';
     public const PRODUCTEUR_REFERENCE_PREFIX = 'producteur-';
     public const STRUCTURE_REFERENCE_PREFIX = 'structure-';
+    public const CLIENT_REFERENCE_PREFIX = 'client_';
+
 
     private UserPasswordHasherInterface $passwordHasher;
 
     public function __construct(UserPasswordHasherInterface $passwordHasher)
     {
         $this->passwordHasher = $passwordHasher;
-    }
-
-    public static function getGroups(): array
-    {
-        return ['users'];
     }
 
     public function load(ObjectManager $manager): void
@@ -74,6 +65,8 @@ class UserFixtures extends Fixture implements FixtureGroupInterface
             $structure->setPhoneNumber($faker->numerify('06########'));
             $manager->persist($structure);
             $this->addReference(self::STRUCTURE_REFERENCE_PREFIX . $i, $structure);
+            $this->addReference(self::CLIENT_REFERENCE_PREFIX . $i, $structure);
+            
         }
 
         $manager->flush();
