@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
+use App\Entity\CustomerOrder;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -21,6 +22,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     #[Groups(['user:read','user:list'])]
     private ?int $id = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['user:read', 'user:write', 'product:read'])]
+    private ?string $name = null;
 
     #[ORM\Column(length: 180)]
     #[Groups(['user:read', 'user:write'])]
@@ -45,17 +50,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255)]
     #[Groups(['user:read', 'user:write', 'user:list'])]
     #[Assert\NotBlank]
-    private ?string $adress = null;
+    private ?string $address = null;
 
     #[ORM\Column(length: 30)]
     #[Groups(['user:read', 'user:write', 'user:list'])]
     #[Assert\NotBlank]
     private ?string $phone_number = null;
 
-    #[ORM\Column(length: 150)]
-    #[Groups(['user:read', 'user:write', 'user:list'])]
-    #[Assert\NotBlank]
-    private ?string $structure_names = null;
+    // #[ORM\Column(length: 150)]
+    // #[Groups(['user:read', 'user:write', 'user:list'])]
+    // #[Assert\NotBlank]
+    // private ?string $structure_names = null;
 
     /**
      * @var Collection<int, Product>
@@ -78,6 +83,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): static
+    {
+        $this->name = $name;
+        return $this;
     }
 
     public function getEmail(): ?string
@@ -157,12 +173,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getAdress(): ?string
     {
-        return $this->adress;
+        return $this->address;
     }
 
     public function setAdress(string $adress): static
     {
-        $this->adress = $adress;
+        $this->address = $adress;
 
         return $this;
     }
@@ -179,17 +195,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getStructureNames(): ?string
-    {
-        return $this->structure_names;
-    }
+    //public function getStructureNames(): ?string
+    //{
+    //    return $this->structure_names;
+    //}
 
-    public function setStructureNames(string $structure_names): static
-    {
-        $this->structure_names = $structure_names;
+   // public function setStructureNames(string $structure_names): static
+    //{
+    //    $this->structure_names = $structure_names;
 
-        return $this;
-    }
+     //   return $this;
+    //}
 
     /**
      * @return Collection<int, Product>
