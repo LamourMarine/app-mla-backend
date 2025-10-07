@@ -9,19 +9,34 @@ security:
             entity:
                 class: App\Entity\User
                 property: email
+
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
-        main:
-            lazy: true
+
+        login:
+            pattern: ^/api/login_check
+            stateless: true
+            json_login:
+                check_path: /api/login_check
+                username_path: email
+                password_path: password
+                success_handler: lexik_jwt_authentication.handler.authentication_success
+                failure_handler: lexik_jwt_authentication.handler.authentication_failure
+
+        api:
+            pattern:   ^/api
+            stateless: true
             provider: app_user_provider
+            jwt: ~
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall
 
             # https://symfony.com/doc/current/security/impersonating_user.html
             # switch_user: true
+
 
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
@@ -33,10 +48,16 @@ security:
     access_control:
         # Accès admin uniquement aux routes sensibles
         - { path: ^/api/categories, roles: ROLE_ADMIN, methods: [POST, PUT, DELETE] }
-        # Exemple : tout le monde peut lister les produits
-        - { path: ^/api/products, roles: ROLE_USER, methods: [GET] }
-        # Exemple : seuls les producteurs peuvent créer un produit
-        - { path: ^/api/products, roles: ROLE_PRODUCTEUR, methods: [POST] }
+        # Routes accessibles uniquement aux producteurs
+        - { path: ^/api/products/create, roles: ROLE_PRODUCTEUR }
+        - { path: ^/api/products/\d+/update_product, roles: ROLE_PRODUCTEUR }
+        
+        # Routes accessibles uniquement aux structures
+        - { path: ^/api/orders, roles: ROLE_STRUCTURE }
+        
+        # Routes publiques
+        - { path: ^/api/login_check, roles: PUBLIC_ACCESS }
+        - { path: ^/api/register, roles: PUBLIC_ACCESS }
 
 when@test:
     security:

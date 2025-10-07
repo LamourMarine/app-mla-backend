@@ -36,7 +36,7 @@ class UserFixtures extends Fixture
         $admin->setRoles(['ROLE_ADMIN']);
         $admin->setName('Administrateur Général');
         $admin->setPassword($this->passwordHasher->hashPassword($admin, 'admin123'));
-        $admin->setAdress($faker->address);
+        $admin->setAddress($faker->address);
         $admin->setPhoneNumber($faker->numerify('06########'));
         $manager->persist($admin);
         $this->addReference(self::ADMIN_REFERENCE, $admin); 
@@ -48,7 +48,7 @@ class UserFixtures extends Fixture
             $producteur->setRoles(['ROLE_PRODUCTEUR']);
             $producteur->setName($faker->company());
             $producteur->setPassword($this->passwordHasher->hashPassword($producteur, 'prod123'));
-            $producteur->setAdress($faker->address);
+            $producteur->setAddress($faker->address);
             $producteur->setPhoneNumber($faker->numerify('06########'));
             $manager->persist($producteur);
             $this->addReference(self::PRODUCTEUR_REFERENCE_PREFIX . $i, $producteur);
@@ -61,7 +61,7 @@ class UserFixtures extends Fixture
             $structure->setRoles(['ROLE_STRUCTURE']);
             $structure->setName($faker->company());
             $structure->setPassword($this->passwordHasher->hashPassword($producteur, 'struct123'));
-            $structure->setAdress($faker->address);
+            $structure->setAddress($faker->address);
             $structure->setPhoneNumber($faker->numerify('06########'));
             $manager->persist($structure);
             $this->addReference(self::STRUCTURE_REFERENCE_PREFIX . $i, $structure);

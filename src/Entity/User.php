@@ -171,14 +171,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         // @deprecated, to be removed when upgrading to Symfony 8
     }
 
-    public function getAdress(): ?string
+    public function getAddress(): ?string
     {
         return $this->address;
     }
 
-    public function setAdress(string $adress): static
+    public function setAddress(string $address): static
     {
-        $this->address = $adress;
+        $this->address = $address;
 
         return $this;
     }
