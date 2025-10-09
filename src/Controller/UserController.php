@@ -86,7 +86,7 @@ class UserController extends AbstractController
         }
 
         if (isset($data['address'])) {
-            $user->setAdress($data['address']);
+            $user->setAddress($data['address']);
         }
 
         if (isset($data['phoneNumber'])) {
