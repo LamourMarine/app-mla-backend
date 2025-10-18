@@ -20,7 +20,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['user:read','user:list'])]
+    #[Groups(['user:read','user:list', 'product:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -56,6 +56,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['user:read', 'user:write', 'user:list'])]
     #[Assert\NotBlank]
     private ?string $phone_number = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['user:read', 'user:write'])]
+    private ?string $photo = null;
 
     // #[ORM\Column(length: 150)]
     // #[Groups(['user:read', 'user:write', 'user:list'])]
@@ -192,6 +196,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->phone_number = $phone_number;
 
+        return $this;
+    }
+
+    public function getPhoto(): ?string
+    {
+        return $this->photo;
+    }
+
+    // setter
+    public function setPhoto(?string $photo): self
+    {
+        $this->photo = $photo;
         return $this;
     }
 

@@ -15,11 +15,11 @@ class Unit
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['unit:read'])]
+    #[Groups(['unit:read', 'product:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['unit:read', 'unit:write'])]
+    #[Groups(['unit:read', 'unit:write', 'product:read'])]
     #[Assert\NotBlank]
     private ?string $name = null;
 

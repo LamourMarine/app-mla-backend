@@ -50,6 +50,7 @@ class UserFixtures extends Fixture
             $producteur->setPassword($this->passwordHasher->hashPassword($producteur, 'prod123'));
             $producteur->setAddress($faker->address);
             $producteur->setPhoneNumber($faker->numerify('06########'));
+            $producteur->setPhoto('/images/producers/producteur_' .$i . '.jpg');
             $manager->persist($producteur);
             $this->addReference(self::PRODUCTEUR_REFERENCE_PREFIX . $i, $producteur);
         }
