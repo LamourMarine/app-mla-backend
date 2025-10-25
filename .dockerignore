@@ -1,0 +1,37 @@
+# Fichiers Git
+.git
+.gitignore
+.gitattributes
+
+# Environnement local
+.env
+.env.local
+.env.*.local
+
+# Cache et logs
+var/cache/
+var/log/
+var/sessions/
+
+# Dépendances (seront installées dans le Dockerfile)
+vendor/
+node_modules/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Tests
+tests/
+.phpunit.result.cache
+
+# Documentation
+README.md
+docs/
+
+# Docker
+docker-compose.yml
+Dockerfile
+.dockerignore
