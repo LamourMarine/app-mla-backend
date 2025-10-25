@@ -36,8 +36,7 @@ RUN chown -R www-data:www-data /app
 RUN composer install --no-dev --optimize-autoloader --no-scripts
 
 # Clear and warmup cache in production
-RUN php bin/console cache:clear --env=prod
-RUN php bin/console cache:warmup --env=prod
+RUN php bin/console cache:warmup --env=prod --no-optional-warmers || true
 
 # Expose ports
 EXPOSE 80 443
