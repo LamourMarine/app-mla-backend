@@ -4,7 +4,7 @@
 .gitattributes
 
 # Environnement local
-.env
+#.env
 .env.local
 .env.*.local
 

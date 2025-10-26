@@ -1,29 +1,23 @@
 services:
   app:
-    container_name: app
-    build: .
+    container_name: app-dev
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
     restart: unless-stopped
     ports:
-      - "8080:80"
+      - "80:80"
       - "443:443"
     volumes:
       - .:/app
       - ./Caddyfile:/etc/frankenphp/Caddyfile
     working_dir: /app
     environment:
+      APP_ENV: dev
+      APP_DEBUG: 1
       SERVER_NAME: localhost
       DATABASE_URL: postgresql://app:password@database:5432/app?serverVersion=15&charset=utf8
 
-  pgadmin:
-    image: dpage/pgadmin4
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_PASSWORD: admin
-    ports:
-      - 5050:80
-    depends_on:
-      - database
-            
   database:
     image: postgres:15
     restart: unless-stopped
@@ -35,6 +29,16 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - 5050:80
+    depends_on:
+      - database
 
 volumes:
   postgres_data:
