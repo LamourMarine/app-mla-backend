@@ -1,16 +1,17 @@
+# config/packages/nelmio_cors.yaml
 nelmio_cors:
     defaults:
         origin_regex: true
-        #allow_origin: ['%env(CORS_ALLOW_ORIGIN)%']
         allow_methods: ['GET', 'OPTIONS', 'POST', 'PUT', 'PATCH', 'DELETE']
         allow_headers: ['Content-Type', 'Authorization']
         expose_headers: ['Link']
         max_age: 3600
     paths:
         '^/api/':
+            origin_regex: true
             allow_origin:
                 - 'https://cantineverte.netlify.app'
                 - 'http://localhost:5173'
             allow_headers: ['Content-Type', 'Authorization']
-            allow_methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
+            allow_methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
             max_age: 3600
