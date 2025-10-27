@@ -1,0 +1,2 @@
+nelmio_cors:
+    resource: "@NelmioCorsBundle/Resources/config/routing/cors.xml"
