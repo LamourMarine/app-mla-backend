@@ -88,6 +88,7 @@
         "doctrine/doctrine-fixtures-bundle": "^4.1",
         "fakerphp/faker": "^1.24",
         "symfony/debug-bundle": "6.4.*",
-        "symfony/maker-bundle": "^1.64"
+        "symfony/maker-bundle": "^1.64",
+        "symfony/web-profiler-bundle": "6.4.*"
     }
 }
