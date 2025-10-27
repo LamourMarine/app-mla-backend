@@ -63,6 +63,11 @@ RUN echo '<VirtualHost *:80>\n\
 RUN mkdir -p /var/www/html/var/cache /var/www/html/var/log && \
     chown -R www-data:www-data /var/www/html/var
 
+# Copier le script d'entrypoint
+COPY docker/entrypoint-prod.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
 EXPOSE 80
 
-CMD ["apache2-foreground"]
+# Utiliser l'entrypoint au lieu d'apache directement
+CMD ["/usr/local/bin/entrypoint.sh"]
