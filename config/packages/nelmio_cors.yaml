@@ -9,9 +9,7 @@ nelmio_cors:
     paths:
         '^/api/':
             origin_regex: true
-            allow_origin:
-                - 'https://cantineverte.netlify.app'
-                - 'http://localhost:5173'
+            allow_origin: ['*']
             allow_headers: ['Content-Type', 'Authorization']
             allow_methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
             max_age: 3600
