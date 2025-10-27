@@ -16,10 +16,6 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
-    # Si c'est une requête OPTIONS, renvoyer 200 OK sans passer par Symfony
-    RewriteCond %{REQUEST_METHOD} OPTIONS
-    RewriteRule ^(.*)$ - [R=200,L]
-
     # Routes Symfony
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
