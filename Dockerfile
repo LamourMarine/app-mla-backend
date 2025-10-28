@@ -59,6 +59,12 @@ RUN mkdir -p config/jwt && \
     chmod 600 config/jwt/private.pem config/jwt/public.pem && \
     echo "✅ JWT keys generated successfully."
 
+# Copier les clés dans le conteneur
+COPY config/jwt /var/www/html/config/jwt
+RUN chown -R www-data:www-data /var/www/html/config/jwt && \
+    chmod 600 /var/www/html/config/jwt/private.pem && \
+    chmod 644 /var/www/html/config/jwt/public.pem
+
 # -------------------------
 
 # Config Apache pour Symfony
