@@ -2,7 +2,7 @@ FROM php:8.3-apache
 
 # Installer dépendances système
 RUN apt-get update && apt-get install -y \
-    git unzip libicu-dev libpq-dev libzip-dev \
+    git unzip libicu-dev libpq-dev libzip-dev openssl \
     && docker-php-ext-install pdo pdo_pgsql intl zip opcache \
     && rm -rf /var/lib/apt/lists/*
 
@@ -24,7 +24,7 @@ RUN echo "APP_ENV=prod" > .env
 # Copier composer.json et composer.lock d'abord (pour le cache Docker)
 COPY composer.json composer.lock symfony.lock ./
 
-# Installer les dépendances en plusieurs étapes pour débugger
+# Installer les dépendances PHP
 RUN composer validate --no-check-publish && \
     composer install \
         --no-dev \
@@ -46,6 +46,20 @@ RUN composer dump-autoload \
 # Vérifier que autoload_runtime.php existe
 RUN test -f /var/www/html/vendor/autoload_runtime.php || \
     (echo "ERROR: autoload_runtime.php not found!" && exit 1)
+
+# -------------------------
+# AJOUT : Génération automatique des clés JWT
+# -------------------------
+ARG JWT_PASSPHRASE
+ENV JWT_PASSPHRASE=$JWT_PASSPHRASE
+
+RUN mkdir -p config/jwt && \
+    openssl genrsa -aes256 -passout pass:$JWT_PASSPHRASE -out config/jwt/private.pem 4096 && \
+    openssl rsa -pubout -passin pass:$JWT_PASSPHRASE -in config/jwt/private.pem -out config/jwt/public.pem && \
+    chmod 600 config/jwt/private.pem config/jwt/public.pem && \
+    echo "✅ JWT keys generated successfully."
+
+# -------------------------
 
 # Config Apache pour Symfony
 RUN echo '<VirtualHost *:80>\n\
