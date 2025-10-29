@@ -12,6 +12,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 #[Route('/api/users', name: 'api_users')]
 class UserController extends AbstractController
@@ -30,6 +32,19 @@ class UserController extends AbstractController
 
         return $this->json($user, 200, [], [
             'groups' => ['user:read']
+        ]);
+    }
+
+    #[Route('/me', methods: ['GET'])]
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
+    public function me(UserInterface $user = null): JsonResponse    {
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+        
+        return $this->json([
+            'id' => $user->getId(),
+            'email' => $user->getEmail(),
+            'roles' => $user->getRoles()
         ]);
     }
 
