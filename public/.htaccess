@@ -1,36 +1,35 @@
 # -----------------------------
-# CORS pour le front Netlify
+# Enable rewrite engine
 # -----------------------------
 RewriteEngine On
 
-# Forward Authorization header to PHP (important for JWT in Symfony)
+# -----------------------------
+# Forward Authorization header to PHP (JWT)
+# -----------------------------
 RewriteCond %{HTTP:Authorization} ^(.*)
 RewriteRule .* - [E=HTTP_AUTHORIZATION:%1]
 
-# Forward REDIRECT_HTTP_AUTHORIZATION to HTTP_AUTHORIZATION
 RewriteCond %{ENV:REDIRECT_HTTP_AUTHORIZATION} ^(.*)
 RewriteRule .* - [E=HTTP_AUTHORIZATION:%1]
 
+# -----------------------------
+# CORS headers
+# -----------------------------
 <IfModule mod_headers.c>
-    # Autoriser uniquement ton front
     SetEnvIf Origin "https://cantineverte\.netlify\.app" AccessControlAllowOrigin=$0
 
-    # Ajouter le header CORS si la variable existe
     Header always set Access-Control-Allow-Origin %{AccessControlAllowOrigin}e env=AccessControlAllowOrigin
     Header always set Access-Control-Allow-Credentials true
     Header always set Access-Control-Allow-Methods "GET, POST, OPTIONS, PUT, PATCH, DELETE"
     Header always set Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With"
+
+    # Test .htaccess
+    Header set X-Test-Header "HelloFromHtaccess"
 </IfModule>
 
-# Répondre directement aux requêtes OPTIONS pour éviter 405
-<IfModule mod_rewrite.c>
-    RewriteEngine On
-
-    # Routes Symfony
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteRule ^(.*)$ /index.php [QSA,L]
-</IfModule>
-
-# Test .htaccess
-Header set X-Test-Header "HelloFromHtaccess"
+# -----------------------------
+# Front controller Symfony
+# -----------------------------
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ /index.php [QSA,L]
