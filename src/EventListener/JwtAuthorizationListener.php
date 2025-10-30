@@ -16,3 +16,5 @@ class JwtAuthorizationListener
         }
     }
 }
+file_put_contents('/tmp/debug_auth.log', print_r($_SERVER, true));
+
