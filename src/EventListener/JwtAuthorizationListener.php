@@ -8,7 +8,9 @@ class JwtAuthorizationListener
     public function onKernelRequest(RequestEvent $event)
     {
         $request = $event->getRequest();
-
+        
+        file_put_contents('/tmp/debug_auth.log', print_r($_SERVER, true));
+        
         if (!$request->headers->has('Authorization')) {
             if (!empty($_SERVER['REDIRECT_HTTP_AUTHORIZATION'])) {
                 $request->headers->set('Authorization', $_SERVER['REDIRECT_HTTP_AUTHORIZATION']);
@@ -16,5 +18,4 @@ class JwtAuthorizationListener
         }
     }
 }
-file_put_contents('/tmp/debug_auth.log', print_r($_SERVER, true));
 
