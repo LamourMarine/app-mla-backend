@@ -69,15 +69,38 @@ RUN chown -R www-data:www-data /var/www/html/config/jwt && \
 
 # Config Apache pour Symfony
 RUN echo '<VirtualHost *:80>\n\
+    ServerAdmin webmaster@localhost\n\
     DocumentRoot /var/www/html/public\n\
+\n\
     <Directory /var/www/html/public>\n\
-        AllowOverride All\n\
+        AllowOverride None\n\
         Require all granted\n\
+\n\
+        # Forward Authorization header à PHP-FPM\n\
+        <IfModule mod_setenvif.c>\n\
+            SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1\n\
+        </IfModule>\n\
+\n\
+        # Fallback Symfony\n\
         FallbackResource /index.php\n\
     </Directory>\n\
+\n\
+    # -----------------------------\n\
+    # CORS pour le front Netlify\n\
+    # -----------------------------\n\
+    <IfModule mod_headers.c>\n\
+        # Autoriser uniquement ton front\n\
+        Header always set Access-Control-Allow-Origin "https://cantineverte.netlify.app"\n\
+        Header always set Access-Control-Allow-Credentials "true"\n\
+        Header always set Access-Control-Allow-Methods "GET, POST, PUT, PATCH, DELETE, OPTIONS"\n\
+        Header always set Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With"\n\
+        Header always set X-Robots-Tag "noindex"\n\
+    </IfModule>\n\
+\n\
     ErrorLog ${APACHE_LOG_DIR}/error.log\n\
     CustomLog ${APACHE_LOG_DIR}/access.log combined\n\
-</VirtualHost>' > /etc/apache2/sites-available/000-default.conf
+</VirtualHost>\n\
+' > /etc/apache2/sites-available/000-default.conf
 
 # Permissions
 RUN mkdir -p /var/www/html/var/cache /var/www/html/var/log && \
