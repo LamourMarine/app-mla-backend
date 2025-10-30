@@ -2,6 +2,11 @@
 # CORS pour le front Netlify
 # -----------------------------
 <IfModule mod_headers.c>
+    # Forward Authorization header to PHP (important for JWT in Symfony)
+    RewriteEngine On
+    RewriteCond %{HTTP:Authorization} ^(.*)
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%1]
+    
     # Autoriser uniquement ton front
     SetEnvIf Origin "https://cantineverte\.netlify\.app" AccessControlAllowOrigin=$0
 
