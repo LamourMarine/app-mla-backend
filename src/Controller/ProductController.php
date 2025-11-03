@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/api/products', name: 'api_products')]
 class ProductController extends AbstractController
@@ -23,7 +24,7 @@ class ProductController extends AbstractController
         private ValidatorInterface $validator
     ) {}
 
-        #[Route('', name: 'product_list', methods: ['GET'])]
+    #[Route('', name: 'product_list', methods: ['GET'])]
     public function index(): JsonResponse
     {
         $products = $this->productRepository->findAll();
@@ -35,6 +36,7 @@ class ProductController extends AbstractController
 
 
     #[Route('', name: 'create_product', methods: ['POST'])]
+    #[IsGranted('ROLE_PRODUCTEUR')]
     public function createProduct(Request $request): JsonResponse
     {
         // Désérialise le JSON en objet Product
@@ -43,6 +45,9 @@ class ProductController extends AbstractController
             Product::class,
             'json'
         );
+
+        // Assigne automatiquement le producteur connecté
+        $product->setSeller($this->getUser());
 
         // Validation
         $errors = $this->validator->validate($product);
@@ -76,6 +81,8 @@ class ProductController extends AbstractController
     #[Route('/{id}', name: 'update_product', methods: ['PUT'])]
     public function updateProduct(Request $request, Product $product): JsonResponse
     {
+        $this->denyAccessUnlessGranted('PRODUCT_EDIT', $product);
+
         $data = json_decode($request->getContent(), true);
 
         if (isset($data['name'])) {
@@ -100,6 +107,8 @@ class ProductController extends AbstractController
             $product->setIsBio($data['isBio']);
         }
 
+        $product->setSeller($this->getUser());
+
         $errors = $this->validator->validate($product);
         if (count($errors) > 0) {
             return $this->json([
@@ -118,6 +127,7 @@ class ProductController extends AbstractController
     public function deleteProduct(
         Product $product,
     ): JsonResponse {
+        $this->denyAccessUnlessGranted('PRODUCT_DELETE', $product);
         $this->entityManager->remove($product);
         $this->entityManager->flush();
 

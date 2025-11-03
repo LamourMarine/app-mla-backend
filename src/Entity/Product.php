@@ -55,14 +55,14 @@ class Product
     #[Groups(['product:read'])]
     private ?User $seller = null;
 
-    #[ORM\ManyToOne(inversedBy: 'products', cascade: ["persist"])]
+    #[ORM\ManyToOne(inversedBy: 'products')] 
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['product:read'])]
+    #[Groups(['product:read', 'product:write'])]
     private ?Category $category = null;
 
-    #[ORM\ManyToOne(inversedBy: 'products', cascade: ["persist"])]
+    #[ORM\ManyToOne(inversedBy: 'products')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['product:read'])]
+    #[Groups(['product:read', 'product:write'])]
     private ?Unit $unit = null;
 
     /**
