@@ -21,6 +21,8 @@ services:
     App\EventListener\CorsSubscriber:
         tags:
             - { name: kernel.event_subscriber }
+        # Désactive le service en environnement dev
+        autoconfigure: false
 
     App\EventListener\JwtAuthorizationListener:
         tags:
