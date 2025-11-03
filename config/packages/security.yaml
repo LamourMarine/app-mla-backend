@@ -50,18 +50,10 @@ security:
 
     access_control:
         - { path: ^/api/users/me, roles: IS_AUTHENTICATED_FULLY }
-        # Accès admin uniquement aux routes sensibles
-        #- { path: ^/api/categories, roles: ROLE_ADMIN, methods: [POST, PUT, DELETE] }
-        # Routes accessibles uniquement aux producteurs
-        #- { path: ^/api/products/create, roles: ROLE_PRODUCTEUR }
-        #- { path: ^/api/products/\d+/update_product, roles: ROLE_PRODUCTEUR }
-        
-        # Routes accessibles uniquement aux structures
-        #- { path: ^/api/orders, roles: ROLE_STRUCTURE }
-        
-        # Routes publiques
-        #- { path: ^/api/login_check, roles: PUBLIC_ACCESS }
-        #- { path: ^/api/register, roles: PUBLIC_ACCESS }
+        - { path: ^/api/login_check, roles: PUBLIC_ACCESS }
+        - { path: ^/api/register, roles: PUBLIC_ACCESS }
+        - { path: ^/api/products, roles: ROLE_PRODUCTEUR, methods: [POST, PUT, DELETE] }
+        - { path: ^/api/orders, roles: ROLE_STRUCTURE }
 
 when@test:
     security:
