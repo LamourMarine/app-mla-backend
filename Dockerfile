@@ -68,7 +68,7 @@ RUN chown -R www-data:www-data /var/www/html/config/jwt && \
 # -------------------------
 
 # Config Apache pour Symfony
-COPY docker/000-default.conf /etc/apache2/sites-available/000-default.conf
+COPY docker/apache/000-default.conf /etc/apache2/sites-available/000-default.conf
 
 # Permissions
 RUN mkdir -p /var/www/html/var/cache /var/www/html/var/log && \
