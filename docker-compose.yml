@@ -6,7 +6,7 @@ services:
       dockerfile: Dockerfile.dev
     restart: unless-stopped
     ports:
-      - "80:80"
+      - "8000:80"
       - "443:443"
     volumes:
       - .:/app
@@ -17,6 +17,7 @@ services:
       APP_DEBUG: 1
       SERVER_NAME: localhost
       DATABASE_URL: postgresql://app:password@database:5432/app?serverVersion=15&charset=utf8
+      CORS_ALLOW_ORIGIN: '*'
 
   database:
     image: postgres:15

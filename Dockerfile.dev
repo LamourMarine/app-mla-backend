@@ -39,7 +39,7 @@ RUN composer install --no-dev --optimize-autoloader --no-scripts
 RUN php bin/console cache:warmup --env=prod --no-optional-warmers || true
 
 # Expose ports
-EXPOSE 80 443
+EXPOSE 8000 443
 
 # Start FrankenPHP
 CMD ["frankenphp", "run"]
