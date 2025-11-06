@@ -25,9 +25,21 @@ class ProductController extends AbstractController
     ) {}
 
     #[Route('', name: 'product_list', methods: ['GET'])]
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $products = $this->productRepository->findAll();
+        $mine = $request->query->get('mine');
+
+        if ($mine === 'true') {
+            $user = $this->getUser();
+
+            if (!$user) {
+                return $this->json(['error' => 'Unauthorized'], 401);
+            }
+
+            $products = $this->productRepository->findBy(['seller' => $user]);
+        } else {
+            $products = $this->productRepository->findAll();
+        }
 
         return $this->json($products, 200, [], [
             'groups' => ['product:read']
