@@ -27,3 +27,8 @@ services:
     App\EventListener\JwtAuthorizationListener:
         tags:
             - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
+
+    App\EventListener\JwtLoginResponseListener:
+        tags:
+            - { name: kernel.event_listener, event: lexik_jwt_authentication.on_authentication_success }
+
