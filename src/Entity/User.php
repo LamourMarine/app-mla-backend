@@ -61,6 +61,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['user:read', 'user:write'])]
     private ?string $photo = null;
 
+    #[ORM\Column(type: 'boolean', options: ['default' => true])]
+    private bool $active = true;
+
     // #[ORM\Column(length: 150)]
     // #[Groups(['user:read', 'user:write', 'user:list'])]
     // #[Assert\NotBlank]
@@ -109,6 +112,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->email = $email;
 
+        return $this;
+    }
+
+    public function isActive(): bool
+    {
+        return $this->active;
+    }
+
+    public function setActive(bool $active): self
+    {
+        $this->active = $active;
         return $this;
     }
 
@@ -208,6 +222,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPhoto(?string $photo): self
     {
         $this->photo = $photo;
+        return $this;
+    }
+
+    public function deactivate(): self
+    {
+        $this->active = false;
+        return $this;
+    }
+
+    public function activate(): self
+    {
+        $this->active = true;
         return $this;
     }
 

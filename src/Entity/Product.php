@@ -38,13 +38,13 @@ class Product
     #[Groups(['product:read', 'product:write', 'product:list'])]
     private ?bool $isBio = null;
 
-    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+    #[ORM\Column(type: Types::FLOAT)]
     #[Groups(['product:read', 'product:write'])]
     #[Assert\NotBlank]
     #[Assert\Positive]
-    private ?string $price = null;
+    private ?float $price = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(type: Types::BOOLEAN)]
     #[Groups(['product:read', 'product:write'])]
     #[Assert\NotBlank]
     #[Assert\PositiveOrZero]
@@ -57,12 +57,12 @@ class Product
 
     #[ORM\ManyToOne(inversedBy: 'products')] 
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['product:read', 'product:write'])]
+    #[Groups(['product:read'])]
     private ?Category $category = null;
 
     #[ORM\ManyToOne(inversedBy: 'products')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['product:read', 'product:write'])]
+    #[Groups(['product:read'])]
     private ?Unit $unit = null;
 
     /**
@@ -129,12 +129,12 @@ class Product
         return $this;
     }
 
-    public function getPrice(): ?string
+    public function getPrice(): ?float
     {
         return $this->price;
     }
 
-    public function setPrice(string $price): static
+    public function setPrice(float $price): self
     {
         $this->price = $price;
 
