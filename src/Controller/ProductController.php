@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Product;
+use App\Repository\CategoryRepository;
+use App\Repository\UnitRepository;
 use App\Repository\ProductRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -47,38 +49,60 @@ class ProductController extends AbstractController
     }
 
 
-    #[Route('', name: 'create_product', methods: ['POST'])]
-    #[IsGranted('ROLE_PRODUCTEUR')]
-    public function createProduct(Request $request): JsonResponse
-    {
-        // Désérialise le JSON en objet Product
-        $product = $this->serializer->deserialize(
-            $request->getContent(),
-            Product::class,
-            'json'
-        );
-
-        // Assigne automatiquement le producteur connecté
-        $product->setSeller($this->getUser());
-
-        // Validation
-        $errors = $this->validator->validate($product);
-        if (count($errors) > 0) {
-            return $this->json([
-                'errors' => (string) $errors
-            ], Response::HTTP_BAD_REQUEST);
+#[Route('', name: 'create_product', methods: ['POST'])]
+#[IsGranted('ROLE_PRODUCTEUR')]
+public function createProduct(
+    Request $request, 
+    EntityManagerInterface $em, 
+    CategoryRepository $categoryRepo, 
+    UnitRepository $unitRepo
+): JsonResponse {
+    $data = json_decode($request->getContent(), true);  // ← Récupère en array
+    
+    // Deserialize sans category et unit
+    $product = $this->serializer->deserialize(
+        $request->getContent(),
+        Product::class,
+        'json',
+        ['groups' => ['product:write']]
+    );
+    
+    // Set manuellement category et unit depuis les IDs
+    if (isset($data['categoryId'])) {
+        $category = $categoryRepo->find($data['categoryId']);
+        if (!$category) {
+            return $this->json(['error' => 'Catégorie invalide'], 400);
         }
-
-        // Persistance
-        $this->entityManager->persist($product);
-        $this->entityManager->flush();
-
-        // Renvoi JSON
-        return $this->json($product, Response::HTTP_CREATED, [], [
-            'groups' => ['product:read']
-        ]);
+        $product->setCategory($category);
     }
-
+    
+    if (isset($data['unitId'])) {
+        $unit = $unitRepo->find($data['unitId']);
+        if (!$unit) {
+            return $this->json(['error' => 'Unité invalide'], 400);
+        }
+        $product->setUnit($unit);
+    }
+    
+    // Assigne le producteur connecté
+    $product->setSeller($this->getUser());
+    
+    // Validation
+    $errors = $this->validator->validate($product);
+    if (count($errors) > 0) {
+        return $this->json([
+            'errors' => (string) $errors
+        ], Response::HTTP_BAD_REQUEST);
+    }
+    
+    // Persistance
+    $this->entityManager->persist($product);
+    $this->entityManager->flush();
+    
+    return $this->json($product, Response::HTTP_CREATED, [], [
+        'groups' => ['product:read']
+    ]);
+}
 
 
     #[Route('/{id}', name: 'show_product', methods: ['GET'])]
@@ -91,7 +115,8 @@ class ProductController extends AbstractController
 
 
     #[Route('/{id}', name: 'update_product', methods: ['PUT'])]
-    public function updateProduct(Request $request, Product $product): JsonResponse
+    public function updateProduct(Request $request, Product $product, CategoryRepository $categoryRepo,
+    UnitRepository $unitRepo): JsonResponse
     {
         $this->denyAccessUnlessGranted('PRODUCT_EDIT', $product);
 
@@ -112,9 +137,19 @@ class ProductController extends AbstractController
         if (isset($data['description_Product'])) {
             $product->setDescriptionProduct($data['description_Product']);
         }
-        if (isset($data['category'])) {
-            $product->setCategory($data['category']);
+        if (isset($data['categoryId'])) {  
+        $category = $categoryRepo->find($data['categoryId']);
+        if ($category) {
+            $product->setCategory($category); 
         }
+    }
+    
+        if (isset($data['unitId'])) {
+        $unit = $unitRepo->find($data['unitId']);
+        if ($unit) {
+            $product->setUnit($unit);
+        }
+    }
         if (isset($data['isBio'])) {
             $product->setIsBio($data['isBio']);
         }
