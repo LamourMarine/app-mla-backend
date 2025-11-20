@@ -9,7 +9,7 @@ use Doctrine\Persistence\ObjectManager;
 
 class UnitFixtures extends Fixture 
 {
-    public const UNIT = ['kg', 'L'];
+    public const UNIT = ['kg', 'L', 'unité'];
     public const UNIT_REFERENCE_PREFIX = 'unit_';
 
     public function load(ObjectManager $manager): void 

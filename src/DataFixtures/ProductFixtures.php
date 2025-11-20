@@ -18,47 +18,58 @@ class ProductFixtures extends Fixture implements DependentFixtureInterface
 
     public function getDependencies(): array
     {
-        return [UserFixtures::class,
-                CategoryFixtures::class,
-                UnitFixtures::class];
+        return [
+            UserFixtures::class,
+            CategoryFixtures::class,
+            UnitFixtures::class
+        ];
     }
 
     public function load(ObjectManager $manager): void
     {
         $faker = Factory::create('fr_FR');
 
-          $categories = ['Légumes', 'Fruits', 'Produits laitiers'];
-            $produits = [
-                'Légumes' => ['Carottes', 'Pommes de terre', 'Poireaux', 'Salades'],
-                'Fruits' => ['Pommes', 'Poires', 'Fraises', 'Rhubarbe'],
-                'Produits laitiers' => ['Lait', 'Yaourt nature', 'Yaourt aux fruits', 'Fromage'],
-            ];
+        $categories = ['Entrées', 'Légumes', 'Viandes', 'Produits laitiers', 'Fruits', 'Féculents', 'Épicerie'];
 
-            $imagesMap = [
-                'Pommes' => '/images/fruits/pommes.jpg',
-                'Fraises' => '/images/fruits/fraises.jpg',
-                'Poires' => '/images/fruits/poires.jpg',
-                'Carottes' => '/images/legumes/carottes.jpg',
-                'Poireaux' => '/images/legumes/poireaux.jpg',
-                'Salades' =>'/images/legumes/salades.jpg',
-                'Pommes de terre' => '/images/legumes/pommes_de_terre.jpg',
-                'Fromage' => '/images/produits_laitiers/fromage.jpg',
-                'Yaourt nature' => '/images/produits_laitiers/yaourt_nature.jpg',
-                'Yaourt aux fruits' => '/images/produits_laitiers/yaourt_aux_fruits.jpg',
-                'Rhubarbe' => '/images/fruits/rhubarbe.jpg',
-                'Lait' => '/images/produits_laitiers/lait.jpg'
-                
-            ];
+        $produits = [
+            'Entrées' => ['Carottes râpées', 'Betteraves', 'Salade verte', 'Endives'],
+            'Légumes' => ['Pommes de terre', 'Poireaux', 'Choux', 'Navets', 'Courges'],
+            'Viandes' => ['Bœuf', 'Poulet', 'Porc', 'Œufs'],
+            'Produits laitiers' => ['Lait', 'Yaourt nature', 'Yaourt aux fruits', 'Fromage blanc', 'Maroilles', 'Beurre'],
+            'Fruits' => ['Pommes', 'Poires', 'Fraises', 'Rhubarbe', 'Prunes'],
+            'Féculents' => ['Pâtes', 'Riz', 'Farine', 'Pain'],
+            'Épicerie' => ['Miel', 'Confiture', 'Huile de colza', 'Jus de pomme'],
+        ];
 
-            $categoryToUnit = [
-                'Légumes' => 'kg',
-                'Fruits' => 'kg',
-                'Produits laitiers' => 'L',
-            ];
+        $imagesMap = [
+            'Pommes' => '/images/fruits/pommes.jpg',
+            'Fraises' => '/images/fruits/fraises.jpg',
+            'Poires' => '/images/fruits/poires.jpg',
+            'Carottes' => '/images/legumes/carottes.jpg',
+            'Poireaux' => '/images/legumes/poireaux.jpg',
+            'Salades' => '/images/legumes/salades.jpg',
+            'Pommes de terre' => '/images/legumes/pommes_de_terre.jpg',
+            'Fromage' => '/images/produits_laitiers/fromage.jpg',
+            'Yaourt nature' => '/images/produits_laitiers/yaourt_nature.jpg',
+            'Yaourt aux fruits' => '/images/produits_laitiers/yaourt_aux_fruits.jpg',
+            'Rhubarbe' => '/images/fruits/rhubarbe.jpg',
+            'Lait' => '/images/produits_laitiers/lait.jpg'
 
+        ];
+
+        $categoryToUnit = [
+            'Entrées' => 'kg',
+            'Légumes' => 'kg',
+            'Viandes' => 'kg',
+            'Produits laitiers' => 'L',
+            'Fruits' => 'kg',
+            'Féculents' => 'kg',
+            'Épicerie' => 'unité',
+        ];
+        
         for ($i = 1; $i <= 50; $i++) {
             $product = new Product();
-            
+
             $categorie = $faker->randomElement($categories);
             $nomProduit = $faker->randomElement($produits[$categorie]);
 
@@ -67,7 +78,7 @@ class ProductFixtures extends Fixture implements DependentFixtureInterface
             $product->setIsBio($faker->boolean(70));
             $product->setPrice($faker->randomFloat(2, 1.50, 15));
             $product->setAvailability($faker->boolean(90));
-            $this->addReference(self::PRODUCT_REFERENCE_PREFIX . $i , $product);
+            $this->addReference(self::PRODUCT_REFERENCE_PREFIX . $i, $product);
 
 
             $product->setImageProduct($imagesMap[$nomProduit] ?? '/images/default.jpg');
@@ -84,7 +95,6 @@ class ProductFixtures extends Fixture implements DependentFixtureInterface
             $product->setSeller($this->getReference(UserFixtures::PRODUCTEUR_REFERENCE_PREFIX . $producteurIndex, user::class));
             $manager->persist($product);
         }
-         $manager->flush();
+        $manager->flush();
     }
-
 }
