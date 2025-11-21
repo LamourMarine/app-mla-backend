@@ -19,7 +19,7 @@ class CorsSubscriber implements EventSubscriberInterface
     {
         $response = $event->getResponse();
         $response->headers->set('Access-Control-Allow-Origin', 'https://cantineverte.netlify.app');
-        $response->headers->set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+        $response->headers->set('Access-Control-Allow-Methods', 'GET, PATCH, POST, PUT, DELETE, OPTIONS');
         $response->headers->set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
         $response->headers->set('Access-Control-Allow-Credentials', 'true');
     }
