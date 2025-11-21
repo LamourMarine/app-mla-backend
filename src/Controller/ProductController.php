@@ -49,61 +49,85 @@ class ProductController extends AbstractController
     }
 
 
-#[Route('', name: 'create_product', methods: ['POST'])]
-#[IsGranted('ROLE_PRODUCTEUR')]
-public function createProduct(
-    Request $request, 
-    EntityManagerInterface $em, 
-    CategoryRepository $categoryRepo, 
-    UnitRepository $unitRepo
-): JsonResponse {
-    $data = json_decode($request->getContent(), true);  // ← Récupère en array
-    
-    // Deserialize sans category et unit
-    $product = $this->serializer->deserialize(
-        $request->getContent(),
-        Product::class,
-        'json',
-        ['groups' => ['product:write']]
-    );
-    
-    // Set manuellement category et unit depuis les IDs
-    if (isset($data['categoryId'])) {
-        $category = $categoryRepo->find($data['categoryId']);
-        if (!$category) {
-            return $this->json(['error' => 'Catégorie invalide'], 400);
+    #[Route('', name: 'create_product', methods: ['POST'])]
+    #[IsGranted('ROLE_PRODUCTEUR')]
+    public function createProduct(
+        Request $request,
+        EntityManagerInterface $em,
+        CategoryRepository $categoryRepo,
+        UnitRepository $unitRepo
+    ): JsonResponse {
+        // Récupérer le JSON depuis le champ 'data' du FormData
+        $jsonData = $request->request->get('data');
+        if (!$jsonData) {
+            return $this->json(['error' => 'Données manquantes'], 400);
         }
-        $product->setCategory($category);
-    }
-    
-    if (isset($data['unitId'])) {
-        $unit = $unitRepo->find($data['unitId']);
-        if (!$unit) {
-            return $this->json(['error' => 'Unité invalide'], 400);
-        }
-        $product->setUnit($unit);
-    }
-    
-    // Assigne le producteur connecté
-    $product->setSeller($this->getUser());
-    
-    // Validation
-    $errors = $this->validator->validate($product);
-    if (count($errors) > 0) {
-        return $this->json([
-            'errors' => (string) $errors
-        ], Response::HTTP_BAD_REQUEST);
-    }
-    
-    // Persistance
-    $this->entityManager->persist($product);
-    $this->entityManager->flush();
-    
-    return $this->json($product, Response::HTTP_CREATED, [], [
-        'groups' => ['product:read']
-    ]);
-}
 
+        $data = json_decode($jsonData, true);
+
+        // Créer le produit manuellement au lieu d'utiliser le serializer
+        $product = new Product();
+        $product->setName($data['name']);
+        $product->setDescriptionProduct($data['description_Product']);
+        $product->setPrice((float) $data['price']); // ← Conversion explicite en float
+        $product->setIsBio($data['isBio']);
+        $product->setAvailability($data['availability']);
+
+        // Set category et unit
+        if (isset($data['categoryId'])) {
+            $category = $categoryRepo->find($data['categoryId']);
+            if (!$category) {
+                return $this->json(['error' => 'Catégorie invalide'], 400);
+            }
+            $product->setCategory($category);
+        }
+
+        if (isset($data['unitId'])) {
+            $unit = $unitRepo->find($data['unitId']);
+            if (!$unit) {
+                return $this->json(['error' => 'Unité invalide'], 400);
+            }
+            $product->setUnit($unit);
+        }
+
+        // Gérer l'upload de l'image
+        $imageFile = $request->files->get('image_Product');
+        if ($imageFile) {
+            // Générer un nom unique
+            $filename = uniqid() . '.' . $imageFile->guessExtension();
+
+            // Déplacer le fichier vers public/uploads/products
+            try {
+                $imageFile->move(
+                    $this->getParameter('kernel.project_dir') . '/public/uploads/products',
+                    $filename
+                );
+
+                // Enregistrer le chemin relatif dans la base
+                $product->setImageProduct('/uploads/products/' . $filename);
+            } catch (\Exception $e) {
+                return $this->json(['error' => 'Erreur lors de l\'upload: ' . $e->getMessage()], 500);
+            }
+        }
+        // Assigne le producteur connecté
+        $product->setSeller($this->getUser());
+
+        // Validation
+        $errors = $this->validator->validate($product);
+        if (count($errors) > 0) {
+            return $this->json([
+                'errors' => (string) $errors
+            ], Response::HTTP_BAD_REQUEST);
+        }
+
+        // Persistance
+        $em->persist($product);
+        $em->flush();
+
+        return $this->json($product, Response::HTTP_CREATED, [], [
+            'groups' => ['product:read']
+        ]);
+    }
 
     #[Route('/{id}', name: 'show_product', methods: ['GET'])]
     public function showProduct(Product $product): JsonResponse
@@ -114,22 +138,34 @@ public function createProduct(
     }
 
 
-    #[Route('/{id}', name: 'update_product', methods: ['PUT'])]
-    public function updateProduct(Request $request, Product $product, CategoryRepository $categoryRepo,
-    UnitRepository $unitRepo): JsonResponse
-    {
+    #[Route('/{id}', name: 'update_product', methods: ['POST'])]
+    public function updateProduct(
+        Request $request,
+        Product $product,
+        CategoryRepository $categoryRepo,
+        UnitRepository $unitRepo
+    ): JsonResponse {
         $this->denyAccessUnlessGranted('PRODUCT_EDIT', $product);
+        error_log('=== DEBUG POST ===');
+        error_log('Content-Type: ' . $request->headers->get('Content-Type'));
+        error_log('Request data: ' . json_encode($request->request->all()));
+        error_log('Files: ' . json_encode(array_keys($request->files->all())));
+        error_log('Method: ' . $request->getMethod());
+        error_log('=================');
 
-        $data = json_decode($request->getContent(), true);
+        // Récupérer les données depuis FormData
+        $jsonData = $request->request->get('data');
+        if (!$jsonData) {
+            return $this->json(['error' => 'Données manquantes'], 400);
+        }
+
+        $data = json_decode($jsonData, true);  // Décoder le JSON depuis 'data'
 
         if (isset($data['name'])) {
             $product->setName($data['name']);
         }
-        if (isset($data['image_Product'])) {
-            $product->setImageProduct($data['image_Product']);
-        }
         if (isset($data['price'])) {
-            $product->setPrice($data['price']);
+            $product->setPrice((float) $data['price']);  //Convertir en float
         }
         if (isset($data['availability'])) {
             $product->setAvailability($data['availability']);
@@ -137,25 +173,40 @@ public function createProduct(
         if (isset($data['description_Product'])) {
             $product->setDescriptionProduct($data['description_Product']);
         }
-        if (isset($data['categoryId'])) {  
-        $category = $categoryRepo->find($data['categoryId']);
-        if ($category) {
-            $product->setCategory($category); 
+        if (isset($data['categoryId'])) {
+            $category = $categoryRepo->find($data['categoryId']);
+            if ($category) {
+                $product->setCategory($category);
+            }
         }
-    }
-    
         if (isset($data['unitId'])) {
-        $unit = $unitRepo->find($data['unitId']);
-        if ($unit) {
-            $product->setUnit($unit);
+            $unit = $unitRepo->find($data['unitId']);
+            if ($unit) {
+                $product->setUnit($unit);
+            }
         }
-    }
         if (isset($data['isBio'])) {
             $product->setIsBio($data['isBio']);
         }
 
-        $product->setSeller($this->getUser());
+        // Gérer l'image si un nouveau fichier est uploadé
+        $imageFile = $request->files->get('image_Product');
+        if ($imageFile) {
+            $filename = uniqid() . '.' . $imageFile->guessExtension();
 
+            try {
+                $imageFile->move(
+                    $this->getParameter('kernel.project_dir') . '/public/uploads/products',
+                    $filename
+                );
+
+                $product->setImageProduct('/uploads/products/' . $filename);
+            } catch (\Exception $e) {
+                return $this->json(['error' => 'Erreur lors de l\'upload: ' . $e->getMessage()], 500);
+            }
+        }
+
+        // Validation
         $errors = $this->validator->validate($product);
         if (count($errors) > 0) {
             return $this->json([
@@ -169,7 +220,6 @@ public function createProduct(
             'groups' => ['product:read']
         ]);
     }
-
     #[Route('/{id}', name: 'delete_product', methods: ['DELETE'])]
     public function deleteProduct(
         Product $product,
