@@ -38,6 +38,8 @@ RUN composer install --no-dev --optimize-autoloader --no-scripts
 # Clear and warmup cache in production
 RUN php bin/console cache:warmup --env=prod --no-optional-warmers || true
 
+RUN git config --global --add safe.directory /app
+
 # Expose ports
 EXPOSE 8000 443
 
