@@ -22,14 +22,24 @@ RewriteRule .* - [E=HTTP_AUTHORIZATION:%1]
     Header always set Access-Control-Allow-Credentials true
     Header always set Access-Control-Allow-Methods "GET, POST, OPTIONS, PUT, PATCH, DELETE"
     Header always set Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With"
+    Header always set Access-Control-Max-Age "3600"
 
     # Test .htaccess
     Header set X-Test-Header "HelloFromHtaccess"
 </IfModule>
 
 # -----------------------------
-# Front controller Symfony
+# Gérer les requêtes OPTIONS (preflight CORS)
 # -----------------------------
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*)$ /index.php [QSA,L]
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # Répondre 200 OK aux requêtes OPTIONS
+    RewriteCond %{REQUEST_METHOD} OPTIONS
+    RewriteRule ^(.*)$ $1 [R=200,L]
+    
+    # Front controller Symfony
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ /index.php [QSA,L]
+</IfModule>
