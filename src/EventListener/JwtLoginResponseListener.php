@@ -19,6 +19,8 @@ class JwtLoginResponseListener
         }
 
         if ($user instanceof \App\Entity\User) {
+            $data['id'] = $user->getId();
+            
             $data['user'] = [
                 'id' => $user->getId(),
                 'email' => $user->getEmail(),
