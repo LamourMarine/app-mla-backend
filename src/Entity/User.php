@@ -17,6 +17,10 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
+    public const STATUS_PENDING = 'pending';
+    public const STATUS_APPROVED = 'approved';
+    public const STATUS_REJECTED = 'rejected';
+    
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -63,6 +67,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(type: 'boolean', options: ['default' => true])]
     private bool $active = true;
+
+    #[ORM\Column(length: 20, nullable: true)]
+    private ?string $status = null;
+
 
     // #[ORM\Column(length: 150)]
     // #[Groups(['user:read', 'user:write', 'user:list'])]
@@ -218,7 +226,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->photo;
     }
 
-    // setter
     public function setPhoto(?string $photo): self
     {
         $this->photo = $photo;
@@ -236,6 +243,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->active = true;
         return $this;
     }
+
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(?string $status): static
+    {
+        $this->status = $status;
+        return $this;
+    }
+
 
     //public function getStructureNames(): ?string
     //{
