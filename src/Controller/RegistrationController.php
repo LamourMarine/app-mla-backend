@@ -62,8 +62,15 @@ class RegistrationController extends AbstractController
             default => 'ROLE_USER'
         };
         $user->setRoles([$role]);
+
+        // 7. Définir le status en fonction du rôle
+        if (in_array('ROLE_PRODUCTEUR', $user->getRoles())) {
+            $user->setStatus(User::STATUS_PENDING);
+        } else {
+            $user->setStatus(User::STATUS_APPROVED);
+        }
         
-        // 7. Valider l'entité
+        // 8. Valider l'entité
         $errors = $validator->validate($user);
         if (count($errors) > 0) {
             $errorMessages = [];
@@ -77,7 +84,7 @@ class RegistrationController extends AbstractController
             ], Response::HTTP_BAD_REQUEST);
         }
         
-        // 8. Vérifier si l'email existe déjà
+        // 9. Vérifier si l'email existe déjà
         $existingUser = $entityManager->getRepository(User::class)
             ->findOneBy(['email' => $data['email']]);
             
@@ -87,11 +94,11 @@ class RegistrationController extends AbstractController
             ], Response::HTTP_CONFLICT);
         }
         
-        // 9. Sauvegarder l'utilisateur
+        //10. Sauvegarder l'utilisateur
         $entityManager->persist($user);
         $entityManager->flush();
         
-        // 10. Retourner une réponse JSON
+        // 11. Retourner une réponse JSON
         return $this->json([
             'message' => 'Utilisateur créé avec succès',
             'user' => [
@@ -101,7 +108,8 @@ class RegistrationController extends AbstractController
                 'address' => $user->getAddress(),
                 'phone_number' => $user->getPhoneNumber(),
                 'role' => $role,
-                'userType' => $data['userType']
+                'userType' => $data['userType'],
+                'status' => $user->getStatus()
             ]
         ], Response::HTTP_CREATED);
     }
