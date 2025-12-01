@@ -1,155 +1,155 @@
 # 🌾 Cantine Verte - Backend
 
-API REST pour la plateforme de vente de produits locaux aux cantines scolaires.
+REST API for the local products sales platform to school canteens.
 
-## Prérequis
+## Prerequisites
 
 - Docker & Docker Compose
-- PHP 8.2+ (si exécution locale sans Docker)
-- Composer (si exécution locale sans Docker)
+- PHP 8.2+ (if running locally without Docker)
+- Composer (if running locally without Docker)
 
 ## Installation
 
-### 1. Cloner le projet
+### 1. Clone the project
 ```bash
 git clone https://github.com/LamourMarine/app-mla-backend.git
 cd app-mla-backend
 ```
 
-### 2. Démarrer avec Docker
+### 2. Start with Docker
 ```bash
 docker compose up -d
 ```
 
-Les services suivants seront lancés :
-- **API** : http://localhost:8000
-- **PostgreSQL** : localhost:5432
-- **pgAdmin** : http://localhost:5050
+The following services will be started:
+- **API**: http://localhost:8000
+- **PostgreSQL**: localhost:5432
+- **pgAdmin**: http://localhost:5050
 
-### 3. Configurer l'environnement (si exécution locale sans Docker)
+### 3. Configure environment (if running locally without Docker)
 
-Créer un fichier `.env.local` :
+Create a `.env.local` file:
 ```env
 DATABASE_URL="postgresql://app:password@127.0.0.1:5432/app?serverVersion=15&charset=utf8"
 JWT_SECRET_KEY=%kernel.project_dir%/config/jwt/private.pem
 JWT_PUBLIC_KEY=%kernel.project_dir%/config/jwt/public.pem
-JWT_PASSPHRASE=votre_passphrase
+JWT_PASSPHRASE=your_passphrase
 CORS_ALLOW_ORIGIN=http://localhost:5173
 ```
 
-### 4. Générer les clés JWT
+### 4. Generate JWT keys
 ```bash
-# Avec Docker
+# With Docker
 docker compose exec app php bin/console lexik:jwt:generate-keypair
 
-# Sans Docker
+# Without Docker
 php bin/console lexik:jwt:generate-keypair
 ```
 
-### 5. Créer la base de données et exécuter les migrations
+### 5. Create database and run migrations
 ```bash
-# Avec Docker
+# With Docker
 docker compose exec app php bin/console doctrine:database:create
 docker compose exec app php bin/console doctrine:migrations:migrate
 
-# Sans Docker
+# Without Docker
 php bin/console doctrine:database:create
 php bin/console doctrine:migrations:migrate
 ```
 
-### 6. Charger les données de test (optionnel, local uniquement)
+### 6. Load test data (optional, local only)
 ```bash
-# Avec Docker
+# With Docker
 docker compose exec app php bin/console doctrine:fixtures:load --no-interaction
 
-# Sans Docker
+# Without Docker
 php bin/console doctrine:fixtures:load --no-interaction
 ```
 
-## Endpoints principaux
+## Main Endpoints
 
-### Authentification
-- `POST /api/register` - Inscription (producteur ou structure)
-- `POST /api/login_check` - Connexion (retourne un JWT)
+### Authentication
+- `POST /api/register` - Register (producer or structure)
+- `POST /api/login_check` - Login (returns a JWT)
 
-### Produits
-- `GET /api/products` - Liste des produits
-- `GET /api/products/{id}` - Détail d'un produit
-- `POST /api/products` - Créer un produit (producteur uniquement)
-- `PUT /api/products/{id}` - Modifier un produit (producteur uniquement)
-- `DELETE /api/products/{id}` - Supprimer un produit (producteur uniquement)
+### Products
+- `GET /api/products` - List products
+- `GET /api/products/{id}` - Get product details
+- `POST /api/products` - Create a product (producer only)
+- `PUT /api/products/{id}` - Update a product (producer only)
+- `DELETE /api/products/{id}` - Delete a product (producer only)
 
-### Producteurs
-- `GET /api/producers` - Liste des producteurs actifs
-- `GET /api/producers/deactivated` - Liste des producteurs désactivés (admin)
-- `PATCH /api/producers/{id}/deactivate` - Désactiver un producteur (admin)
-- `PATCH /api/producers/{id}/activate` - Réactiver un producteur (admin)
+### Producers
+- `GET /api/producers` - List active producers
+- `GET /api/producers/deactivated` - List deactivated producers (admin)
+- `PATCH /api/producers/{id}/deactivate` - Deactivate a producer (admin)
+- `PATCH /api/producers/{id}/activate` - Reactivate a producer (admin)
 
-### Validation des producteurs (Admin)
-- `GET /api/admin/producers/pending` - Liste des producteurs en attente
-- `PATCH /api/admin/producers/{id}/approve` - Approuver un producteur
-- `PATCH /api/admin/producers/{id}/reject` - Rejeter un producteur
+### Producer Validation (Admin)
+- `GET /api/admin/producers/pending` - List pending producers
+- `PATCH /api/admin/producers/{id}/approve` - Approve a producer
+- `PATCH /api/admin/producers/{id}/reject` - Reject a producer
 
-### Commandes
-- `POST /api/orders` - Créer une commande
-- `GET /api/orders` - Mes commandes
-- `GET /api/orders/{id}` - Détail d'une commande
+### Orders
+- `POST /api/orders` - Create an order
+- `GET /api/orders` - Get my orders
+- `GET /api/orders/{id}` - Get order details
 
-### Catégories & Unités
-- `GET /api/categories` - Liste des catégories
-- `GET /api/units` - Liste des unités
+### Categories & Units
+- `GET /api/categories` - List categories
+- `GET /api/units` - List units
 
-## 🛠️ Technologies
+## Technologies
 
-- **Framework** : Symfony 7
-- **Serveur** : FrankenPHP (Docker)
-- **Base de données** : PostgreSQL 15
-- **Authentification** : LexikJWTAuthenticationBundle
-- **ORM** : Doctrine
-- **Fixtures** : DoctrineFixturesBundle avec Faker
+- **Framework**: Symfony 7
+- **Server**: FrankenPHP (Docker)
+- **Database**: PostgreSQL 15
+- **Authentication**: LexikJWTAuthenticationBundle
+- **ORM**: Doctrine
+- **Fixtures**: DoctrineFixturesBundle with Faker
 
-## Rôles utilisateurs
+## User Roles
 
-- `ROLE_USER` : Utilisateur de base (par défaut)
-- `ROLE_PRODUCTEUR` : Producteur (peut gérer ses produits, nécessite validation admin)
-- `ROLE_STRUCTURE` : Structure/cantine (peut passer des commandes)
-- `ROLE_ADMIN` : Administrateur (validation des producteurs, gestion globale)
+- `ROLE_USER`: Base user (default)
+- `ROLE_PRODUCTEUR`: Producer (can manage their products, requires admin validation)
+- `ROLE_STRUCTURE`: Structure/canteen (can place orders)
+- `ROLE_ADMIN`: Administrator (producer validation, global management)
 
-## Statuts des producteurs
+## Producer Status
 
-Les producteurs passent par un système de validation :
-- `pending` : En attente de validation par un admin
-- `approved` : Approuvé, peut se connecter et vendre
-- `rejected` : Refusé par l'admin
+Producers go through a validation system:
+- `pending`: Awaiting admin validation
+- `approved`: Approved, can login and sell
+- `rejected`: Rejected by admin
 
-## Structure du projet
+## Project Structure
 ```
 src/
-├── Controller/       # Contrôleurs API
-├── Entity/          # Entités Doctrine
+├── Controller/       # API Controllers
+├── Entity/          # Doctrine Entities
 ├── Repository/      # Repositories
-├── DataFixtures/    # Données de test (local uniquement)
-└── EventListener/   # Listeners (validation JWT, etc.)
+├── DataFixtures/    # Test data (local only)
+└── EventListener/   # Listeners (JWT validation, etc.)
 ```
 
-## Comptes de test (après fixtures - local uniquement)
+## Test Accounts (after fixtures - local only)
 
-Les fixtures génèrent automatiquement :
-- Un compte **admin** avec email et mot de passe aléatoires
-- Plusieurs **producteurs** de test
-- Plusieurs **structures** de test
-- Des produits dans différentes catégories
+Fixtures automatically generate:
+- An **admin** account with random email and password
+- Multiple test **producers**
+- Multiple test **structures**
+- Products in various categories
 
-Consultez les logs lors du chargement des fixtures pour voir les identifiants générés.
+Check the logs when loading fixtures to see the generated credentials.
 
-## Notes techniques
+## Technical Notes
 
 ### CORS
-- En développement : accepte les requêtes depuis `http://localhost:5173` (Vite)
-- En production : configuré pour `https://cantineverte.netlify.app`
+- Development: accepts requests from `http://localhost:5173` (Vite)
+- Production: configured for `https://cantineverte.netlify.app`
 
-### Images produits
-Les images sont stockées dans `public/images/` avec la structure suivante :
+### Product Images
+Images are stored in `public/images/` with the following structure:
 ```
 public/images/
 ├── fruits/
@@ -157,37 +157,37 @@ public/images/
 └── produits_laitiers/
 ```
 
-### Sérialisation
-Les groupes de sérialisation sont définis dans les entités pour contrôler les données exposées par l'API.
+### Serialization
+Serialization groups are defined in entities to control data exposed by the API.
 
-## Déploiement
+## Deployment
 
 ### Production
-- **API** : https://app-mla-backend.onrender.com
-- **Base de données** : Supabase (PostgreSQL)
-- **Frontend** : https://cantineverte.netlify.app
+- **API**: https://app-mla-backend.onrender.com
+- **Database**: Supabase (PostgreSQL)
+- **Frontend**: https://cantineverte.netlify.app
 
-### Variables d'environnement en production
-Configurez les variables suivantes sur Render :
-- `DATABASE_URL` : URL de connexion Supabase
-- `JWT_SECRET_KEY` : Clé privée JWT
-- `JWT_PUBLIC_KEY` : Clé publique JWT
-- `JWT_PASSPHRASE` : Passphrase JWT
-- `CORS_ALLOW_ORIGIN` : https://cantineverte.netlify.app
+### Production Environment Variables
+Configure the following variables on Render:
+- `DATABASE_URL`: Supabase connection URL
+- `JWT_SECRET_KEY`: JWT private key
+- `JWT_PUBLIC_KEY`: JWT public key
+- `JWT_PASSPHRASE`: JWT passphrase
+- `CORS_ALLOW_ORIGIN`: https://cantineverte.netlify.app
 
 ## Debugging
 
-### Accéder à pgAdmin (local)
-- URL : http://localhost:5050
-- Email : admin@admin.com
-- Password : admin
+### Access pgAdmin (local)
+- URL: http://localhost:5050
+- Email: admin@admin.com
+- Password: admin
 
-### Logs Docker
+### Docker Logs
 ```bash
 docker compose logs -f app
 ```
 
-### Redémarrer les services
+### Restart Services
 ```bash
 docker compose restart
 ```
