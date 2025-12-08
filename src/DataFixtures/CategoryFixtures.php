@@ -9,7 +9,7 @@ use Doctrine\Persistence\ObjectManager;
 
 class CategoryFixtures extends Fixture 
 {
-    public const CATEGORIES = ['Entrées', 'Légumes', 'Viandes', 'Produits laitiers', 'Fruits', 'Féculents', 'Épicerie'];
+    public const CATEGORIES = ['Entrées', 'Légumes', 'Viandes', 'Produits laitiers', 'Fruits', 'Féculents', 'Épicerie', 'Œufs'];
 
 
     public function load(ObjectManager $manager):void
