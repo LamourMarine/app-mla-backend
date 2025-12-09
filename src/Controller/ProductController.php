@@ -69,7 +69,7 @@ class ProductController extends AbstractController
         $product = new Product();
         $product->setName($data['name']);
         $product->setDescriptionProduct($data['description_Product']);
-        $product->setPrice((float) $data['price']); // ← Conversion explicite en float
+        $product->setPrice((float) $data['price']); // Conversion explicite en float
         $product->setIsBio($data['isBio']);
         $product->setAvailability($data['availability']);
 

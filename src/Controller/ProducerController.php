@@ -30,7 +30,7 @@ class ProducerController extends AbstractController
         ]);
     }
 
-    // Liste des producteurs DÉSACTIVÉS (admin seulement)
+    // Liste des producteurs désactivés (admin seulement)
     #[Route('/api/producers/deactivated', name: 'api_producers_deactivated', methods: ['GET'])]
     #[IsGranted('ROLE_ADMIN')]
     public function getDeactivated(UserRepository $userRepo): JsonResponse
@@ -45,7 +45,7 @@ class ProducerController extends AbstractController
         ]);
     }
 
-    // Désactiver un producteur (soft delete)
+    // Désactiver un producteur
     #[Route('/api/producers/{id}/deactivate', name: 'api_producers_deactivate', methods: ['PATCH'])]
     #[IsGranted('ROLE_ADMIN')]
     public function deactivate(int $id, UserRepository $userRepo): JsonResponse
@@ -93,7 +93,7 @@ class ProducerController extends AbstractController
         ], 200, [], ['groups' => ['user:read']]);
     }
 
-    // Suppression définitive (optionnel, garde-le si tu veux vraiment supprimer)
+    // Suppression définitive
     #[Route('/api/producers/{id}', name: 'api_producers_delete', methods: ['DELETE'])]
     #[IsGranted('ROLE_ADMIN')]
     public function delete(int $id, UserRepository $userRepo): JsonResponse

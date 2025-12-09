@@ -45,7 +45,7 @@ class ProductVoter extends Voter
 
     private function canEditOrDelete(Product $product, User $user): bool
     {
-        // Le producteur ne peut modifier/supprimer que SES produits
+        // Le producteur ne peut modifier/supprimer que ses produits
         return $product->getSeller() === $user && $user->isProducteur();
     }
 }

@@ -27,7 +27,7 @@ class CustomerOrderFixtures extends Fixture implements DependentFixtureInterface
             $order->setOrderAt($orderDate);
             $manager->persist($order);
       
-            // Récupérer un client aléatoire (utilisateurs de type client)
+            // Récupérer un client aléatoire
             $customerIndex = $faker->numberBetween(1, 10);
             $order->setCustomer(
                 $this->getReference(UserFixtures::CLIENT_REFERENCE_PREFIX . $customerIndex, User::class)
@@ -39,7 +39,7 @@ class CustomerOrderFixtures extends Fixture implements DependentFixtureInterface
     for ($j = 0; $j < $nbProducts; $j++) {
         // Récupère un produit aléatoire créé dans ProductFixtures
         $productIndex = $faker->numberBetween(1, 10);
-        $product = $this->getReference(ProductFixtures::PRODUCT_REFERENCE_PREFIX . $productIndex, Product::class); // Assure-toi d'avoir cette référence dans ProductFixtures
+        $product = $this->getReference(ProductFixtures::PRODUCT_REFERENCE_PREFIX . $productIndex, Product::class);
         $quantity = $faker->numberBetween(1, 3);
 
         $orderLine = new OrderLine();

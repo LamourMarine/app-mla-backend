@@ -57,7 +57,7 @@ RUN mkdir -p config/jwt && \
     openssl genrsa -aes256 -passout pass:$JWT_PASSPHRASE -out config/jwt/private.pem 4096 && \
     openssl rsa -pubout -passin pass:$JWT_PASSPHRASE -in config/jwt/private.pem -out config/jwt/public.pem && \
     chmod 600 config/jwt/private.pem config/jwt/public.pem && \
-    echo "✅ JWT keys generated successfully."
+    echo "JWT keys generated successfully."
 
 # Copier les clés dans le conteneur
 COPY config/jwt /var/www/html/config/jwt
