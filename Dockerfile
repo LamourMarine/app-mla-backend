@@ -28,21 +28,19 @@ COPY composer.json composer.lock symfony.lock ./
 RUN composer validate --no-check-publish && \
     composer install \
         --no-dev \
-        --no-scripts \
-        --no-autoloader \
         --no-interaction \
         --prefer-dist \
+        --optimize-autoloader \
         --verbose
 
 # Copier tout le reste du code
 COPY . .
 
-# Générer l'autoloader
+# Regénérer l'autoloader avec le code complet
 RUN composer dump-autoload \
         --optimize \
         --classmap-authoritative \
         --no-dev
-
 # Vérifier que autoload_runtime.php existe
 RUN test -f /var/www/html/vendor/autoload_runtime.php || \
     (echo "ERROR: autoload_runtime.php not found!" && exit 1)
