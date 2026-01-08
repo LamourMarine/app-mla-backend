@@ -18,15 +18,13 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
-# Créer un .env complet AVANT composer install
-RUN echo "APP_ENV=prod" > .env && \
-    echo "APP_SECRET=temp_secret_for_build" >> .env && \
-    echo "DATABASE_URL=postgresql://user:pass@localhost:5432/db" >> .env
+# Créer un .env minimal AVANT de copier le code
+RUN echo "APP_ENV=prod" > .env
 
 # Copier composer.json et composer.lock d'abord (pour le cache Docker)
 COPY composer.json composer.lock symfony.lock ./
 
-# Installer les dépendances PHP SANS exécuter les scripts Symfony
+# Installer les dépendances PHP SANS scripts
 RUN composer install \
         --no-dev \
         --no-interaction \
@@ -38,9 +36,13 @@ RUN composer install \
 # Copier tout le reste du code
 COPY . .
 
-# Maintenant regénérer l'autoloader AVEC les scripts (autoload_runtime.php sera créé)
-RUN composer dump-autoload --optimize --classmap-authoritative --no-dev && \
-    composer run-script auto-scripts
+# Regénérer l'autoloader sans exécuter les scripts Symfony
+RUN composer dump-autoload --optimize --classmap-authoritative --no-dev
+
+# Créer manuellement les répertoires de cache (au lieu de cache:clear)
+RUN mkdir -p var/cache var/log && \
+    chown -R www-data:www-data var
+    
 # Vérifier que autoload_runtime.php existe
 RUN test -f /var/www/html/vendor/autoload_runtime.php || \
     (echo "ERROR: autoload_runtime.php not found!" && exit 1)
