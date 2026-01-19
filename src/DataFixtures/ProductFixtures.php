@@ -274,7 +274,7 @@ class ProductFixtures extends Fixture implements DependentFixtureInterface
             'Miel' => '/images/epicerie/miel.jpg',
             'Farine' => '/images/feculents/farine.jpg',
             'Pain' => '/images/feculents/pain.jpg',
-            'Pâtes' => '/images/feculents/pâtes.jpg',
+            'Pâtes' => '/images/feculents/pates.jpg',
             'Semoule' => '/images/feculents/semoule.jpg',
             'Pruneaux' => '/images/fruits/pruneaux-ecoproduits-.jpg',
             'Choux' => '/images/legumes/choux_verts.jpg',
