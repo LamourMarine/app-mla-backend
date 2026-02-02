@@ -1,6 +1,6 @@
 # 🌾 Cantine Verte - Backend
 
-REST API for the local products sales platform to school canteens.
+REST API for connecting local producers with school canteens. This platform enables producers to list their local products and allows canteens to place orders directly.
 
 ## Prerequisites
 
@@ -108,6 +108,10 @@ php bin/console doctrine:fixtures:load --no-interaction
 - **ORM**: Doctrine
 - **Fixtures**: DoctrineFixturesBundle with Faker
 
+## Related Projects
+
+- [Frontend Application](https://github.com/LamourMarine/app-mla-frontend) - React TypeScript client
+
 ## User Roles
 
 - `ROLE_USER`: Base user (default)
@@ -165,7 +169,7 @@ Serialization groups are defined in entities to control data exposed by the API.
 ### Production
 - **API**: https://app-mla-backend.onrender.com
 - **Database**: Supabase (PostgreSQL)
-- **Frontend**: https://cantineverte.netlify.app
+- **Frontend**: [https://cantineverte.netlify.app](https://cantineverte.netlify.app)
 
 ### Production Environment Variables
 Configure the following variables on Render:
@@ -191,3 +195,12 @@ docker compose logs -f app
 ```bash
 docker compose restart
 ```
+
+## Author
+
+**Marine Lamour** - Backend Developer   
+[Portfolio](https://ml-dev.netlify.app)
+
+## License
+
+This project is open source and available under the MIT License.
